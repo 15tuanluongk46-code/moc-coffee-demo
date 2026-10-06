@@ -1,0 +1,30 @@
+# Reproducible render outputs and release archives
+/renders/
+/dist/
+
+# Python and local tooling caches
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.playwright-mcp/
+node_modules/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Blender automatic backups; keep the named source .blend files
+*.blend[0-9]*
+
+# Transient files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

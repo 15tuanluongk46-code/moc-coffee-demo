@@ -1,0 +1,9 @@
+* text=auto
+*.blend binary
+*.mp4 binary
+*.webp binary
+*.png binary
+*.jpg binary
+*.ttf binary
+# Preserve upstream font license text verbatim, including trailing spaces.
+web/fonts/*-OFL.txt whitespace=-blank-at-eol
