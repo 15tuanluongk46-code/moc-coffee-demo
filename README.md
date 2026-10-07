@@ -1,5 +1,8 @@
 # MỘC Coffee — Từ đất lành, đến vị nguyên bản
 
+Máy mới: [SETUP.md](SETUP.md). Hướng dẫn AI: [AGENTS.md](AGENTS.md).
+Kiểm tra bàn giao: [VERIFICATION.md](VERIFICATION.md).
+
 Demo landing page kể chuyện bằng cuộn: **nông trại → xưởng rang → espresso → ly cà phê & bao bì**. Toàn bộ hình học/vật liệu được dựng mới bằng Blender; video cuộn được render tại máy. Không dùng API trả phí, không cần npm hoặc backend ứng dụng.
 
 ## Mở demo
@@ -34,7 +37,7 @@ Bản mới: https://moc-coffee-demo.pages.dev/?v=motion-3#origin
 
 - `web/` — website hoàn chỉnh, HTML/CSS/JavaScript không dependency.
 - `web/media/journey-v2/` — MP4 desktop/mobile và 8 WebP poster hiện tại, đã bỏ dãy gạch nối.
-- `source/moc-journey-v01.blend` — bốn trạm cùng đường camera 288 frame / 24 fps.
+- `source/moc-journey-no-connectors-v02.blend` — nguồn hành trình hiện tại; `moc-journey-v01.blend` là bản gốc lịch sử.
 - `scripts/journey_scene.py` — mô hình/camera, mở rộng từ `farm_scene.py`.
 - `scripts/render_journey.py` — render tiếp tục từ frame còn thiếu, GPU với CPU fallback.
 - `scripts/package_media.py` — mã hóa H.264, GOP ngắn phục vụ seek và đóng gói poster.
@@ -97,7 +100,7 @@ python scripts/check_extraction.py
 
 Nguồn: `source/moc-extraction-v01.blend`, `scripts/espresso_studio.py`; 72 frame gốc mỗi khung desktop/mobile, mã hóa chậm thành 144 frame / 24 fps. Script tiếp tục từ PNG hiện có; muốn thay hình học cần lưu riêng các frame cũ trước khi dựng lại. Hơi nước là lớp CSS đặt theo tọa độ camera của tách, không phải mô phỏng chất lỏng vật lý.
 
-Cần Blender 5.2, FFmpeg/FFprobe, ImageMagick và Python 3.10+. Chạy tại thư mục dự án:
+Cần Blender 5.2, FFmpeg/FFprobe, ImageMagick và Python 3.10+. Các lệnh dưới tái tạo bản v01 lịch sử; bản hiện tại dùng `docs/connector-removal-validation.md`. Chạy tại thư mục dự án:
 
 ```bash
 blender -b source/moc-journey-v01.blend -t 8 --python scripts/render_journey.py -- --view desktop
@@ -109,7 +112,7 @@ Thêm `--cpu` khi cần. `--proof` chỉ render bốn trạm; `--start 100 --end
 
 Desktop 1280×800; mobile 720×1440 với camera/crop riêng. Mỗi video 12 giây, 288 frame, 24 fps, H.264/yuv420p, không âm thanh. Camera đi qua một thế giới liên tục; bản demo dùng góc nhìn diorama trực giao, không phải chuyển động bay xuyên bên trong từng công trình như mọi đoạn của reference.
 
-## Dựng lại từ đầu
+## Dựng lại từ đầu — pipeline v01 lịch sử
 
 ```bash
 blender -b --factory-startup --python scripts/rebuild.py
@@ -131,18 +134,17 @@ python scripts/test_boutique.py
 python scripts/test_scroll_stops.py
 ```
 
-Trên máy hiện tại đã có môi trường tương thích:
+Tạo môi trường test riêng trên máy mới:
 
 ```bash
-/home/sss/AI-Home/projects/flowbot/.venv/bin/python scripts/test_web.py
-/home/sss/AI-Home/projects/flowbot/.venv/bin/python scripts/test_ux.py
-/home/sss/AI-Home/projects/flowbot/.venv/bin/python scripts/test_motion.py
-/home/sss/AI-Home/projects/flowbot/.venv/bin/python scripts/test_motion_v2.py
-/home/sss/AI-Home/projects/flowbot/.venv/bin/python scripts/test_boutique.py
-/home/sss/AI-Home/projects/flowbot/.venv/bin/python scripts/test_scroll_stops.py
+python3 -m venv .venv-test
+.venv-test/bin/python -m pip install playwright Pillow
+.venv-test/bin/python -m playwright install chromium
+mkdir -p renders
+.venv-test/bin/python scripts/test_web.py --static-only
 ```
 
-Không sửa project flowbot; chỉ mượn Python/Playwright đã cài. `--static-only` kiểm tra poster trước khi video sẵn sàng.
+`--static-only` kiểm tra poster trước khi video sẵn sàng. Dùng Python trong `.venv-test` cho các lệnh test còn lại; xem SETUP để phân biệt suite hiện tại và lịch sử.
 
 Đợt sửa UX ngày 2026-10-06: xem `docs/ux-validation.md`. Chế độ ảnh tĩnh/video có nhãn và thông báo trạng thái rõ ràng; tải video quá 12 giây sẽ chuyển sang poster và cho thử lại. Back/Forward theo các lần chọn chương, xoay màn hình giữ tiến trình, popup khóa cuộn nền. Khi tắt JavaScript, bốn chương hiển thị thành nội dung đọc thông thường.
 
