@@ -14,7 +14,7 @@ Mở http://127.0.0.1:8046. Server hỗ trợ HTTP Range; đừng dùng `file://
 
 ```bash
 python3 -m venv .venv-test
-.venv-test/bin/python -m pip install playwright Pillow
+.venv-test/bin/python -m pip install --require-hashes -r requirements-test.lock
 .venv-test/bin/python -m playwright install chromium
 mkdir -p renders
 .venv-test/bin/python scripts/test_web.py --static-only
@@ -27,6 +27,10 @@ mkdir -p renders
 Giữ server ở terminal riêng trong lúc test. Không mượn virtualenv Flowbot. Linux thiếu thư viện browser: dùng hướng dẫn lỗi Playwright hoặc `playwright install --with-deps chromium` trong venv với quyền cài package phù hợp. Test web có `--base-url`; xem từng script trước khi đổi cổng cho suite khác.
 
 Các test motion (`test_motion.py`, `test_motion_v2.py`, `test_motion_timing.py`), khung (`test_scene_frame.py`), polish và CDN là kiểm tra chuyên biệt theo tài liệu `docs/`; đọc kỳ vọng so với phiên bản hiện tại trước khi dùng làm gate. `test_video_cdn.py` có thể truy cập site public; không đưa vào smoke local mặc định. `test_extraction.py` còn kỳ vọng overlay đã bỏ: không chạy toàn bộ như gate hiện tại. Báo rõ case lỗi thay vì xóa test lịch sử để có màu xanh.
+
+Lock test được resolve cho Python 3.10 và cài kiểm tra trên Linux/Python 3.10.21;
+không khóa binary Chromium hoặc system libraries. Máy/platform khác cần kiểm thử riêng.
+Khi chủ động cập nhật: `uv pip compile requirements-test.in --python-version 3.10 --generate-hashes -o requirements-test.lock`, rồi cài và chạy lại tests.
 
 ## 3. Đóng gói static
 
